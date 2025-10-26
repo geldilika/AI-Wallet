@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AI Wallet Explainer</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", sans-serif;
+        background-color: #f3f4f6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        width: 100%;
+      }
+
+      h1 {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+        text-align: center;
+        color: #111827;
+      }
+
+      input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+      }
+
+      button {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: #2563eb;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      button:hover {
+        background-color: #1e40af;
+      }
+
+      pre {
+        margin-top: 1.5rem;
+        background: #f9fafb;
+        padding: 1rem;
+        border-radius: 8px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        font-size: 0.95rem;
+        color: #374151;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🧠 AI Wallet Explainer</h1>
+      <input
+        type="text"
+        id="wallet"
+        placeholder="Paste an Ethereum wallet address"
+      />
+      <button onclick="getExplanation()">Explain</button>
+      <p
+        id="balance"
+        style="font-weight: 600; margin-top: 1rem; color: #16a34a"
+      ></p>
+
+      <pre id="output"></pre>
+    </div>
+
+    <script>
+      async function getExplanation() {
+        const wallet = document.getElementById("wallet").value;
+        document.getElementById("output").innerText = "Loading...";
+        document.getElementById("balance").innerText = "";
+
+        try {
+          const response = await fetch("/explain", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ wallet }),
+          });
+
+          const data = await response.json();
+
+          if (data.error) {
+            document.getElementById("output").innerText =
+              "Error: " + data.error;
+          } else {
+            document.getElementById("balance").innerText =
+              `💰 Balance: ${data.balance} ETH`;
+            document.getElementById("output").innerText = data.message;
+          }
+        } catch (err) {
+          document.getElementById("output").innerText = "Error: " + err.message;
+        }
+      }
+    </script>
+  </body>
+</html>
